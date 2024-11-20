@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<style>
+    
+</style>
+<body class="h-screen py-10 flex items-center justify-center">
+    <!-- signup form -->
+    <div id="signupForm" class="grid place-items-center gap-4">
+        <h1 class="font-semibold text-4xl text-indigo-500">Sign up</h1>
+    <form  class="bg-[#f7f7f7] shadow-md  rounded-xl min-h-[100px] w-[280px] px-6 py-10 space-y-4 border">
+        <div>
+            <div><label class="text-sm" for="email">Email</label></div>
+            <input name="email" class=" p-[.35rem] outline-sky-600 shadow-inner shadow-gray-300 border border-blue-200 w-[100%] text-sm rounded  hover:border-sky-400 " type="email" id="emailSignup" required>
+        </div>
+        <div>
+            <div><label class="text-sm" for="password">Password</label></div>
+            <input name="password"  class=" p-[.35rem] outline-sky-600 shadow-inner shadow-gray-300 border border-blue-200 w-[100%] text-sm rounded  hover:border-sky-400 " type="password" id="passwordSignup" required>
+        </div>
+        <button type="button" onclick="handleSignup()"; class="bg-blue-500 border text-white w-[100%] hover:bg-blue-400 py-1 rounded">Sign up</button>
+        <p class="text-xs text-gray-700">already have an account? <span onclick="swap()" class="text-indigo-500 cursor-pointer hover:font-semibold">Please signin</span> </p>
+    </form>
+    </div>
+    <!-- signin form -->
+    <div style="display:none" id="signinForm" class="grid place-items-center gap-4">
+        <h1  class="font-semibold text-4xl text-green-600">Sign In</h1>
+    <form  class="bg-[#f7f7f7] shadow-md  rounded-xl min-h-[100px] w-[280px] px-6 py-10 space-y-4 border">
+        <div>
+            <div><label class="text-sm" for="email">Email</label></div>
+            <input name="email"class=" p-[.35rem] outline-sky-600 shadow-inner shadow-gray-300 border border-blue-200 w-[100%] text-sm rounded  hover:border-sky-400 " type="email" id="emailSignin" required>
+        </div>
+        <div>
+            <div><label class="text-sm" for="password">Password</label></div>
+            <input name="password"  class=" p-[.35rem] outline-sky-600 shadow-inner shadow-gray-300 border border-blue-200 w-[100%] text-sm rounded  hover:border-sky-400 " type="password" id="passwordSignin" required>
+        </div>
+        <button type="button" onclick="handleSignin()"; class="bg-green-600 border text-white w-[100%] hover:bg-green-500 py-1 rounded">Sign In</button>
+        <p class="text-xs text-gray-700">Don't you have an account? <span onclick="swap()" class="text-green-500 cursor-pointer hover:font-semibold">SignUp first</span> </p>
+        <p class="text-xs text-red-700 cursor-pointer hover:font-semibold" onclick="resetPasswordForm()">I Forgot My Password ?</p>
+    </form>
+    </div>
+    <!-- forgot password form -->
+    <div style="display: none; " id="forgotForm">
+        <span onclick="backForm()" class="hover:-translate-x-1 transition-all text-xs fa fa-backward p-2 h-8 w-8 mr-8 rounded-full border  hover:bg-indigo-500 hover:text-white mb-4 hover:bg-indigo-400 cursor-pointer"></span>
+        <form class="bg-[#f7f7f7] shadow-md  rounded-xl min-h-[100px] w-[300px] px-6 py-10 space-y-4 border">
+            <h1 class="text-2xl font-bold ">Reset Password</h1>
+
+            <p class="text-sm text-gray-700">Please enter your email address to receive a password reset link.</p>
+            
+            <div><label for="reset-password" class="text-sm">Email Address</label></div>
+            <input type="text" id="emailReset" class=" p-[.35rem] outline-sky-600 shadow-inner shadow-gray-300 border border-blue-200 w-[100%] text-sm rounded  hover:border-sky-400 " required>
+            
+            <button type="button" class="group bg-indigo-500 border text-white w-[100%] hover:bg-indigo-400 py-1 rounded" onclick="resetLink()">Send Password Reset Link <i class="group-hover:translate-x-1 group-hover:-translate-y-1  transition-all fa fa-send-o"></i></button>
+            <p class="text-xs text-indigo-900">after send email to reset password check your gmail account and tap reset option</p>
+        </form>
+    </div>
+    
+    <script>
+ // The swap function that switches between Sign Up and Sign In
+    const signupForm = document.getElementById("signupForm");
+    const signinForm = document.getElementById("signinForm");
+    const forgotForm = document.getElementById("forgotForm");
+    function swap() {
+
+        // Toggle visibility
+        if (signupForm.style.display !== "none") {
+            signupForm.style.display = "none"; // Hide Sign Up form
+            signinForm.style.display = "grid"; // Show Sign In form
+        } else {
+            signupForm.style.display = "grid"; // Show Sign Up form
+            signinForm.style.display = "none"; // Hide Sign In form
+        }
+    }
+
+// function for signup-----------------------------------------------------------
+    const handleSignup=async(e) =>{
+    // Get the values from the input fields
+    const email = document.getElementById('emailSignup').value;
+    const password = document.getElementById('passwordSignup').value;
+    const formData = {
+        email:email,
+        password:password,
+    };
+
+    // Check if either email or password is empty
+    if (email === '' || password === '') {
+        alert("You must give your email and password");
+    } else {
+        // If both fields are filled, create a data object and log it
+        // console.log(formData); // Output the data to the console
+        
+       const response= await fetch(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAyTI9sE6NclWKoGpwsn4-MLEwSjOgD-b4",
+        {
+            method:"POST",
+            body:JSON.stringify(formData),
+            headers:{
+                "Content-Type": "application/json",
+            }
+        }
+    )
+    const responsedData=await response.json();
+    
+    console.log(responsedData);
+    
+        // Clear the input fields after logging the data
+        document.getElementById('emailSignup').value = '';
+        document.getElementById('passwordSignup').value = '';
+    }
+}
+
+
+// function for signin-----------------------------------------------------------
+    const handleSignin=async(e) =>{
+        
+    // Get the values from the input fields
+    const email = document.getElementById('emailSignin').value;
+    const password = document.getElementById('passwordSignin').value;
+    const formData = {
+        email:email,
+        password:password,
+        returnSecureToken:true,
+    };
+    
+    // Check if either email or password is empty
+    if (email == '' || password == '') {
+        alert("You must give your email and password");
+        // console.log(email,password);
+        
+        // If both fields are filled, create a data object and log it
+        // console.log(formData); // Output the data to the console
+    }else{
+       const response= await fetch(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAyTI9sE6NclWKoGpwsn4-MLEwSjOgD-b4",
+        {
+            method:"POST",
+            body:JSON.stringify(formData),
+            headers:{
+                "Content-Type": "application/json",
+            }
+        }
+    )
+    const responsedData=await response.json();
+    
+    console.log(responsedData);
+    console.log(responsedData.idToken);
+    localStorage.setItem("Token",responsedData.idToken)
+    }
+    
+        // Clear the input fields after logging the data
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+    }
+//visit to reset password form---------------------
+    resetPasswordForm=()=>{
+        signupForm.style.display = "none"; // Hide Sign Up form
+        signinForm.style.display = "none"; // Hide Sign In form
+
+        forgotForm.style.display = "flex" // display forgoten screen
+        
+    }
+    
+    backForm=()=>{
+        // signupForm.style.display = "block"; // display Sign Up form
+        signinForm.style.display = "grid"; // display Sign In form
+    
+        forgotForm.style.display = "none" // hide forgoten screen
+
+    }
+    // resetPasswordForm()
+
+// function for reset-----------------------------------------------------------    
+    const resetLink=async()=>{
+    
+        const email = document.getElementById('emailReset').value;
+        // console.log(email);
+        const request={
+            requestType:"PASSWORD_RESET",
+            email:email,
+        }
+        const result =await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAyTI9sE6NclWKoGpwsn4-MLEwSjOgD-b4",
+        {
+            method:"POST",
+            body:JSON.stringify(request),
+            headers:{
+                "Content-Type": "application/json"
+            }
+        }   
+        )    
+        const response =await result.json();
+        console.log(response);
+        
+
+}
+
+
+    
+    </script>
+</body>
+</html>
